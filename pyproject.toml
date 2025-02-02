@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "supabase-inactive-fix"
+version = "0.1.0"
+description = "prevents Supabase projects from pausing due to inactivity"
+authors = ["Travis Van Nimwegen"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.13"
+supabase = "^2.10.0"
+python-dotenv = "^1.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

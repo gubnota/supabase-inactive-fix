@@ -21,78 +21,77 @@ This project helps prevent Supabase projects from pausing due to inactivity by p
 ## Setup 🚀
 
 1. Clone the repository:
-    
-    ```bash
-    git clone https://github.com/travisvn/supabase-inactive-fix.git
-    cd supabase-inactive-fix
-    ```
-    
+
+   ```bash
+   git clone https://github.com/travisvn/supabase-inactive-fix.git
+   cd supabase-inactive-fix
+   ```
+
 2. Install the required dependencies:
-    
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-    pip install -r requirements.txt
-    ```
-    
-3. Create a `config.json` file in the project root. This file defines your Supabase databases. 
 
-   
-    Example configuration:
-    
-    ```json
-    [
-      {
-        "name": "Database1",
-        "supabase_url": "https://your-supabase-url-1.supabase.co",
-        "supabase_key_env": "SUPABASE_KEY_1",  // Use environment variable for the key
-        "table_name": "KeepAlive"
-      },
-      {
-        "name": "Database2",
-        "supabase_url": "https://your-supabase-url-2.supabase.co",
-        "supabase_key": "your-direct-supabase-key",  // Directly define the key
-        "table_name": "keep-alive"
-      }
-    ]
-    ```
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   pip install -r requirements.txt
+   ```
 
-    [See the section below for how to easily configure your database](#supabase-database-setup)
-    
-    ### Environment Variables Explained
-    
-    In the `config.json` file, you can define either:
-    
-    - **Direct API Key**: Use the `"supabase_key"` field to directly specify your Supabase API key.
-    - **Environment Variable**: Use the `"supabase_key_env"` field to reference an environment variable where the key is stored. This is more secure, especially when running the script in different environments.
-    
-    #### Example:
-    
-    - `"supabase_key_env": "SUPABASE_KEY_1"`: This tells the script to look for an environment variable called `SUPABASE_KEY_1` that contains the actual API key.
-    - `"supabase_key": "your-direct-supabase-key"`: This directly provides the API key within the `config.json` file, which is less secure but simpler for local setups.
+3. Create a `config.json` file in the project root. This file defines your Supabase databases.
+
+   Example configuration:
+
+   ```json
+   [
+     {
+       "name": "Database1",
+       "supabase_url": "https://your-supabase-url-1.supabase.co",
+       "supabase_key_env": "SUPABASE_KEY_1", // Use environment variable for the key
+       "table_name": "KeepAlive"
+     },
+     {
+       "name": "Database2",
+       "supabase_url": "https://your-supabase-url-2.supabase.co",
+       "supabase_key": "your-direct-supabase-key", // Directly define the key
+       "table_name": "keep-alive"
+     }
+   ]
+   ```
+
+   [See the section below for how to easily configure your database](#supabase-database-setup)
+
+   ### Environment Variables Explained
+
+   In the `config.json` file, you can define either:
+
+   - **Direct API Key**: Use the `"supabase_key"` field to directly specify your Supabase API key.
+   - **Environment Variable**: Use the `"supabase_key_env"` field to reference an environment variable where the key is stored. This is more secure, especially when running the script in different environments.
+
+   #### Example:
+
+   - `"supabase_key_env": "SUPABASE_KEY_1"`: This tells the script to look for an environment variable called `SUPABASE_KEY_1` that contains the actual API key.
+   - `"supabase_key": "your-direct-supabase-key"`: This directly provides the API key within the `config.json` file, which is less secure but simpler for local setups.
 
 4. Set up your environment variables _if you're using them_:
-    
-    Create a `.env` file and store variables there
-    
-    ```
-    SUPABASE_KEY_1="your-supabase-key-1"
-    SUPABASE_KEY_2="your-supabase-key-2"
-    ```
-    
+
+   Create a `.env` file and store variables there
+
+   ```
+   SUPABASE_KEY_1="your-supabase-key-1"
+   SUPABASE_KEY_2="your-supabase-key-2"
+   ```
+
 5. Run the script:
-    
-    ```bash
-    python main.py
-    ```
+
+   ```bash
+   python main.py
+   ```
 
 ## Supabase Database Setup 🔧
 
-This project is predicated on accessing a `keep-alive` table in your Postgres database on Supabase. 
+This project is predicated on accessing a `keep-alive` table in your Postgres database on Supabase.
 
-### Sample SQL 
+### Sample SQL
 
-Here's a SQL query for a `keep-alive` table 
+Here's a SQL query for a `keep-alive` table
 
 ```sql
 CREATE TABLE "keep-alive" (
@@ -108,7 +107,6 @@ VALUES
   ('placeholder'),
   ('example');
 ```
-    
 
 ## Cron Job Setup ⏱️
 
@@ -117,17 +115,16 @@ To automate this script, you can create a cron job that runs the script periodic
 ### macOS/Linux
 
 1. Open your crontab file for editing:
-    
-    ```bash
-    crontab -e
-    ```
-    
+
+   ```bash
+   crontab -e
+   ```
+
 2. Add a new cron job to run the script every Monday and Thursday at midnight:
-    
-    ```bash
-    0 0 * * 1,4 cd /path/to/your/project && /path/to/your/project/venv/bin/python main.py >> /path/to/your/project/logfile.log 2>&1
-    ```
-    
+
+   ```bash
+   0 0 * * 1,4 cd /path/to/your/project && /path/to/your/project/venv/bin/python main.py >> /path/to/your/project/logfile.log 2>&1
+   ```
 
 This example cron job will:
 
@@ -146,25 +143,21 @@ For reference, here’s an example used in development:
 Windows does not have cron jobs, but you can achieve similar functionality using Task Scheduler.
 
 1. Open **Task Scheduler** and select **Create Basic Task**.
-    
 2. Name the task and set the trigger to run weekly.
-    
 3. Set the days (e.g., Monday and Thursday) and time (e.g., midnight) when the script should run.
-    
 4. In the **Action** step, select **Start a Program**, and point it to your Python executable within your virtual environment. For example:
-    
-    ```vbnet
-    C:\path\to\your\project\venv\Scripts\python.exe
-    ```
-    
+
+   ```vbnet
+   C:\path\to\your\project\venv\Scripts\python.exe
+   ```
+
 5. In the **Arguments** field, specify the path to the script:
-    
-    ```vbnet
-    C:\path\to\your\project\main.py
-    ```
-    
+
+   ```vbnet
+   C:\path\to\your\project\main.py
+   ```
+
 6. Save the task. The script will now run automatically according to the schedule you specified.
-    
 
 ## Contribution
 
@@ -173,3 +166,36 @@ Feel free to open an issue or submit a pull request if you'd like to contribute 
 ## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for more details.
+
+Create truncate table function to truncate table:
+
+```sql
+CREATE OR REPLACE FUNCTION truncate_table(table_name TEXT)
+RETURNS VOID AS $$
+BEGIN
+    EXECUTE 'TRUNCATE TABLE ' || quote_ident(table_name) || ' RESTART IDENTITY CASCADE';
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+```
+
+```py
+    def truncate_table(self):
+        try:
+            # Send a raw SQL query to truncate the table
+            self.client.rpc("truncate_table", {"table_name": self.table_name}).execute()
+            print(f"Truncated '{self.table_name}'.")
+            return True
+        except Exception as e:
+            print(f"Error truncating '{self.table_name}': {e}")
+            return False
+
+```
+
+# Setting up crontab
+In order to not have an error `Can't open input file: zsh` like this:
+1. make sure cron has full disk access (either is poetry or uv)
+```sh
+0 * * * * "/Users/vm/Documents/petProjects/supabase-inactive-fix/run.sh" >/dev/null 2>&1
+#* * * * * /bin/zsh -c "/Users/vm/Documents/petProjects/supabase-inactive-fix/run2.sh"
+```
+2. remove  `>/dev/null 2>&1` and make sure if you run every minute it doesn't have any issues in /var/mail/{username}

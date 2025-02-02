@@ -32,7 +32,23 @@ class SupabaseClient:
         except Exception as e:
             print(f"Error counting data in '{self.table_name}': {e}")
             return None
-
+    def truncate_table(self):
+        try:
+            # Send a raw SQL query to truncate the table
+            self.client.rpc("truncate_table", {"table_name": self.table_name}).execute()
+            print(f"Truncated '{self.table_name}'.")
+            return True
+        except Exception as e:
+            print(f"Error truncating '{self.table_name}': {e}")
+            return False
+    # def truncate_table(self):
+    #     try:
+    #         self.client.table(self.table_name).truncate().execute()
+    #         print(f"Truncated '{self.table_name}'.")
+    #         return True
+    #     except Exception as e:
+    #         print(f"Error truncating '{self.table_name}': {e}")
+    #         return False
     def delete_random_entry(self):
         try:
             # Fetch all IDs from the table

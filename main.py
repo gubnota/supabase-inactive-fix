@@ -3,8 +3,12 @@
 import json
 import os
 import logging
+from dotenv import load_dotenv
 from helpers.utils import generate_secure_random_string
 from services.supabase_service import SupabaseClient
+
+# Load environment variables from .env file
+load_dotenv()
 
 # User-defined variables to toggle additional features
 log_failed_databases = True  # Set to True to log failed databases
@@ -85,16 +89,16 @@ def main():
         # Initialize success_delete to None
         success_delete = None
 
-        # If there are more than 10 entries, delete a random one
-        if count > 10:
-            logging.info(f"Table '{table_name}' has more than 10 entries. Deleting a random entry.")
-            success_delete = supabase_client.delete_random_entry()
+        # If there are more than 2 entries, delete a random one
+        if count > 2:
+            logging.info(f"Table '{table_name}' has more than 2 entries. Deleting all entries.")
+            success_delete = supabase_client.truncate_table()#delete_random_entry()
             if not success_delete:
                 all_successful = False
                 if log_failed_databases and name not in failed_databases:
                     failed_databases.append(name)
         else:
-            logging.info(f"Table '{table_name}' has 10 or fewer entries. No deletion needed.")
+            logging.info(f"Table '{table_name}' has 2 or fewer entries. No deletion needed.")
 
         # Collect status information
         if detailed_status_report:
