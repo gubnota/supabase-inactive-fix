@@ -63,6 +63,14 @@ def main():
         # Initialize Supabase client for this configuration
         supabase_client = SupabaseClient(url, key, table_name)
 
+        # Check if the table exists and create it if necessary.
+        if not supabase_client.check_and_create_table():
+            logging.error(f"Table '{table_name}' does not exist and creation failed for database '{name}'.")
+            all_successful = False
+            if log_failed_databases:
+                failed_databases.append(name)
+            continue
+
         # Generate a random string
         random_name = generate_secure_random_string(10)
 
@@ -92,7 +100,7 @@ def main():
         # If there are more than 2 entries, delete a random one
         if count > 2:
             logging.info(f"Table '{table_name}' has more than 2 entries. Deleting all entries.")
-            success_delete = supabase_client.truncate_table()#delete_random_entry()
+            success_delete = supabase_client.truncate_table()  # or delete_random_entry()
             if not success_delete:
                 all_successful = False
                 if log_failed_databases and name not in failed_databases:

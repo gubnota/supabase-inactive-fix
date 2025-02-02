@@ -1,15 +1,15 @@
 # Supabase Inactive Fix
 
-![GitHub stars](https://img.shields.io/github/stars/travisvn/supabase-inactive-fix?style=social)
-![GitHub forks](https://img.shields.io/github/forks/travisvn/supabase-inactive-fix?style=social)
-![GitHub repo size](https://img.shields.io/github/repo-size/travisvn/supabase-inactive-fix)
-![GitHub language count](https://img.shields.io/github/languages/count/travisvn/supabase-inactive-fix)
-![GitHub top language](https://img.shields.io/github/languages/top/travisvn/supabase-inactive-fix)
-![GitHub last commit](https://img.shields.io/github/last-commit/travisvn/supabase-inactive-fix?color=red)
-![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Ftravisvn%2Fsupabase-inactive-fix&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)
-[![](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://img.shields.io/github/sponsors/travisvn)
+![GitHub stars](https://img.shields.io/github/stars/gubnota/supabase-inactive-fix?style=social)
+![GitHub forks](https://img.shields.io/github/forks/gubnota/supabase-inactive-fix?style=social)
+![GitHub repo size](https://img.shields.io/github/repo-size/gubnota/supabase-inactive-fix)
+![GitHub language count](https://img.shields.io/github/languages/count/gubnota/supabase-inactive-fix)
+![GitHub top language](https://img.shields.io/github/languages/top/gubnota/supabase-inactive-fix)
+![GitHub last commit](https://img.shields.io/github/last-commit/gubnota/supabase-inactive-fix?color=red)
+![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgubnota%2Fsupabase-inactive-fix&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)
+[![](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://img.shields.io/github/sponsors/gubnota)
 
-This project helps prevent Supabase projects from pausing due to inactivity by periodically inserting, monitoring, and deleting entries in the specified tables of multiple Supabase databases. The project uses a configuration file (`config.json`) to define multiple databases and automate the keep-alive actions.
+This project helps prevent Supabase projects from pausing due to inactivity by periodically inserting, monitoring, and deleting entries in the specified tables of multiple Supabase databases. The project uses a configuration file (`config.json`) to define multiple databases and automate the keep-alive actions. Initially, this was a fork of [another project of the same name supabase-inactive-fix written by Travis Van Nimwegen](https://github.com/travisvn/supabase-inactive-fix). Unfortunately, the original version didn't work for me so I had to rewrite it.
 
 ## Features ⭐️
 
@@ -23,12 +23,17 @@ This project helps prevent Supabase projects from pausing due to inactivity by p
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/travisvn/supabase-inactive-fix.git
+   git clone https://github.com/gubnota/supabase-inactive-fix.git
    cd supabase-inactive-fix
    ```
 
-2. Install the required dependencies:
+2. Install the required dependencies using `poetry` or `uv`:
 
+   ```bash
+   poetry install
+   ```
+
+   or the old way:
    ```bash
    python -m venv venv
    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
@@ -77,17 +82,28 @@ This project helps prevent Supabase projects from pausing due to inactivity by p
    ```
    SUPABASE_KEY_1="your-supabase-key-1"
    SUPABASE_KEY_2="your-supabase-key-2"
+   SUPABASE_KEY_3="your-supabase-key-3"
+   SUPABASE_KEY_4="your-supabase-key-4"
    ```
 
 5. Run the script:
 
    ```bash
+   poetry run python main.py
+   ```
+
+   or the old way:
+
+   ```bash
+   source venv/bin/activate
    python main.py
+   deactivate
    ```
 
 ## Supabase Database Setup 🔧
 
-This project is predicated on accessing a `keep-alive` table in your Postgres database on Supabase.
+This project requires you to create a `keep-alive` table in your Postgres database on Supabase.
+Or you can let the script to create it by itself (in that case look at `Functions` section).
 
 ### Sample SQL
 
@@ -112,7 +128,19 @@ VALUES
 
 To automate this script, you can create a cron job that runs the script periodically. Below are instructions for setting this up on macOS, Linux, and Windows.
 
-### macOS/Linux
+### macOS
+
+In order to not have an error `Can't open input file: zsh` like this:
+1. make sure cron has full disk access (either is poetry or uv)
+```sh
+0 * * * * "full/path/to/supabase-inactive-fix/run.sh" >/dev/null 2>&1
+#* * * * * /bin/zsh -c "full/path/to/supabase-inactive-fix/run2.sh"
+```
+2. make sure cron_env.log is empty after running the script
+3. remove  `>/dev/null 2>&1` and make sure if you run every minute it doesn't have any issues in /var/mail/{username}
+4. make sure remote server table `keep-alive` has changed after running the script
+
+### Linux
 
 1. Open your crontab file for editing:
 
@@ -135,7 +163,7 @@ This example cron job will:
 For reference, here’s an example used in development:
 
 ```bash
-0 0 * * 1,4 cd /Users/travis/Workspace/supabase-inactive-fix && /Users/travis/Workspace/supabase-inactive-fix/venv/bin/python main.py >> /Users/travis/Workspace/supabase-inactive-fix/logfile.log 2>&1
+0 0 * * 1,4 cd full/path/to/supabase-inactive-fix && full/path/to/supabase-inactive-fix/venv/bin/python main.py >> full/path/to/supabase-inactive-fix/logfile.log 2>&1
 ```
 
 ### Windows (Task Scheduler)
@@ -159,17 +187,19 @@ Windows does not have cron jobs, but you can achieve similar functionality using
 
 6. Save the task. The script will now run automatically according to the schedule you specified.
 
-## Contribution
-
-Feel free to open an issue or submit a pull request if you'd like to contribute to this project.
-
-## License
-
-This project is licensed under the MIT License. See the `LICENSE` file for more details.
-
-Create truncate table function to truncate table:
-
+## Functions
+Create functions in Postgres before you can create tables and truncate them:
 ```sql
+CREATE OR REPLACE FUNCTION public.execute_sql(sql text)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  EXECUTE sql;
+END;
+$$;
+
 CREATE OR REPLACE FUNCTION truncate_table(table_name TEXT)
 RETURNS VOID AS $$
 BEGIN
@@ -177,7 +207,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 ```
-
+Now you can run this command:
 ```py
     def truncate_table(self):
         try:
@@ -191,11 +221,3 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 ```
 
-# Setting up crontab
-In order to not have an error `Can't open input file: zsh` like this:
-1. make sure cron has full disk access (either is poetry or uv)
-```sh
-0 * * * * "/Users/vm/Documents/petProjects/supabase-inactive-fix/run.sh" >/dev/null 2>&1
-#* * * * * /bin/zsh -c "/Users/vm/Documents/petProjects/supabase-inactive-fix/run2.sh"
-```
-2. remove  `>/dev/null 2>&1` and make sure if you run every minute it doesn't have any issues in /var/mail/{username}
